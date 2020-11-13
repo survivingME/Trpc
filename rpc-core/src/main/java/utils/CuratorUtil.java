@@ -1,0 +1,67 @@
+package utils;
+
+import enums.RpcConfigEnum;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Slf4j
+public class CuratorUtil {
+
+    private static final int BASE_SLEEP_TIME = 1000;
+    private static final int MAX_RETRIES = 3;
+    public static final String ZK_REGISTER_ROOT_PATH = "/my-rpc";
+    private static final Map<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
+    private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
+    private static CuratorFramework zkClient;
+    private static String defaultZookeeperAddress = "127.0.0.1:2181";
+
+    private CuratorUtil() {}
+
+    /**
+     * @return a started zkClient
+     */
+    public static CuratorFramework getZkClient() {
+        Properties properties = PropertiesFilesUtil.readPropertiesFile(RpcConfigEnum.RPC_CONFIG_PATH.getPropertyValue());
+        //check if user has set zk address
+        if(properties != null) defaultZookeeperAddress = properties.getProperty(RpcConfigEnum.ZK_ADDRESS.getPropertyValue());
+        //if zkClient has been started, return directly
+        if(zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) return zkClient;
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(BASE_SLEEP_TIME, MAX_RETRIES);
+        zkClient = CuratorFrameworkFactory.builder()
+                .connectString(defaultZookeeperAddress)
+                .retryPolicy(retryPolicy)
+                .build();
+        zkClient.start();
+        return zkClient;
+    }
+
+    /**
+     * create persistent nodes, not removed when the client disconnects
+     * @param zkClient
+     * @param path
+     */
+    public static void createPersistentNode(CuratorFramework zkClient, String path) {
+        try {
+            if(REGISTERED_PATH_SET.contains(path) || zkClient.checkExists().forPath(path) != null) {
+                log.info("The node already exists. The node is [{}]", path);
+            } else {
+                zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path);
+                log.info("The node was created successfully. The node is:[{}]", path);
+            }
+            REGISTERED_PATH_SET.add(path);
+        } catch (Exception e) {
+            log.error("create persistent node for path [{}] fail", path);
+        }
+    }
+}
