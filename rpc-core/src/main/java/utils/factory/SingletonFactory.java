@@ -1,4 +1,4 @@
-package factory;
+package utils.factory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
