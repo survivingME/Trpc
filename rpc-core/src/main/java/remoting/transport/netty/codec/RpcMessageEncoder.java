@@ -9,6 +9,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.extern.slf4j.Slf4j;
 import remoting.RpcConstants;
 import remoting.dto.RpcMessage;
+import utils.compress.Compress;
 import utils.serialize.Serializer;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,9 +63,16 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
                 bodyBytes = serializer.serialize(rpcMessage.getData());
                 //compress bytes
                 String compressName = CompressTypeEnum.getName(rpcMessage.getCompress());
-
+                Compress compress = ExtensionLoader.getExtensionLoader(Compress.class).getExtension(compressName);
+                bodyBytes = compress.compress(bodyBytes);
+                fullLength += bodyBytes.length;
             }
-
+            if(bodyBytes != null) byteBuf.writeBytes(bodyBytes);
+            int writeIndex = byteBuf.writerIndex();
+            // return to index full length ?
+            byteBuf.writerIndex(RpcConstants.MAGIC_NUMBER.length + 1);
+            byteBuf.writeInt(fullLength);
+            byteBuf.writerIndex(writeIndex);
         } catch (Exception e) {
             log.error("Encode request error: ", e);
         }
