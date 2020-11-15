@@ -21,4 +21,8 @@ public class RpcServiceProperties {
      * service version
      */
     private String version;
+
+    public String toRpcServiceName() {
+        return this.getServiceName() + this.getGroup() + this.getVersion();
+    }
 }
