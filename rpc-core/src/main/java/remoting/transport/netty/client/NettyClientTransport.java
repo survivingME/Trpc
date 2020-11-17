@@ -16,7 +16,6 @@ import utils.factory.SingletonFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class NettyClientTransport implements ClientTransport {
