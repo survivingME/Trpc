@@ -1,5 +1,3 @@
-package sample.api;
-
 public interface CalculatorService {
     Calresult add(Integer a, Integer b);
 

@@ -1,9 +1,5 @@
-package sample.client;
-
 import annotation.RpcReference;
 import org.springframework.stereotype.Component;
-import sample.api.CalculatorService;
-import sample.api.Calresult;
 
 @Component
 public class CalculatorController {
@@ -12,13 +8,13 @@ public class CalculatorController {
     private CalculatorService calculatorService;
 
     public void test() throws InterruptedException {
-        Calresult add = calculatorService.add(4, 9);
+        Calresult add = this.calculatorService.add(4, 9);
         System.out.println(add);
-        Calresult sub = calculatorService.sub(4, 9);
+        Calresult sub = this.calculatorService.sub(4, 9);
         System.out.println(sub);
-        Calresult mul = calculatorService.mul(4, 9);
+        Calresult mul = this.calculatorService.mul(4, 9);
         System.out.println(mul);
-        Calresult div = calculatorService.div(9, 4);
+        Calresult div = this.calculatorService.div(9, 4);
         System.out.println(div);
     }
 }

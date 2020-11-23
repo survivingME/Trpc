@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 import provider.ServiceProvider;
 import provider.ServiceProviderImpl;
 import proxy.RpcClientProxy;
@@ -17,6 +18,7 @@ import utils.factory.SingletonFactory;
 import java.lang.reflect.Field;
 
 @Slf4j
+@Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
     private final ServiceProvider serviceProvider;
     private final ClientTransport rpcClient;

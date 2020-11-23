@@ -1,5 +1,3 @@
-package sample.api;
-
 import lombok.*;
 
 import java.io.Serializable;

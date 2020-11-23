@@ -1,9 +1,5 @@
-package sample.server;
-
 import annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
-import sample.api.CalculatorService;
-import sample.api.Calresult;
 
 @Slf4j
 @RpcService(group = "test1", version = "1.0")

@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SingletonFactory {
+public final class SingletonFactory {
     private static final Map<String, Object> OBJECT_MAP = new HashMap<>();
 
     private SingletonFactory() {}
